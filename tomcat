@@ -1,0 +1,15 @@
+---
+- name: pull an image
+  hosts: localhost
+  become: yes
+  tasks:
+    - name: docker pull
+      docker_image:
+        name: tomcat
+        source: pull
+    - name: Container present
+      docker_container:
+        name: tomcat
+        image: tomcat
+        ports:
+        - "9110:8080"
