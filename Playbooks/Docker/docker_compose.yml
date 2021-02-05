@@ -1,0 +1,80 @@
+---
+- name: Provision docker Server
+  hosts: localhost
+  tasks:
+
+    - name: Install pip3
+      apt:
+        update_cache: yes
+        name: python3-pip
+      become: yes
+
+    - name: Install python docker sdk
+      shell: |
+        pip3 install docker
+      become: yes
+
+    - name: Install docker
+      apt:
+        name: docker.io
+      become: yes
+
+    - name: Start Docker
+      shell: |
+        systemctl start docker
+        systemctl enable docker
+      become: yes
+
+    - name: Setup Docker Host for Remote Usage
+      lineinfile:
+        path: /lib/systemd/system/docker.service
+        state: present
+        regexp: '(ExecStart*.*)'
+        line: ExecStart=/usr/bin/dockerd -H fd:// -H tcp://0.0.0.0:2375
+      become: yes
+
+    - name: Reload the Daemon and Restart Docker
+      shell: |
+        systemctl daemon-reload
+        systemctl restart docker
+      become: yes
+    
+    - name: download docker compose
+      shell: |
+        sudo curl -L https://github.com/docker/compose/releases/download/1.21.2/docker-compose-`uname -s`-`uname -m` -o /usr/local/bin/docker-compose
+        chmod +x /usr/local/bin/docker-compose
+      become: yes
+
+    - name: Install Maven
+      apt:
+        name: maven
+      become: yes
+    
+    - name: copy files to VM
+      copy:
+        src: /home/hamdi/pfe-version1.0/complete
+        dest: /tmp
+      become: yes
+    
+    - name: build spring boot jar
+      shell: |
+        cd /tmp/complete
+      become: yes
+
+    - name: build spring boot jar
+      shell: |
+        chmod +x /tmp/complete/mvnw
+      become: yes
+
+    - name: build spring boot jar
+      shell: |
+        cd /tmp/complete
+        ./mvnw package
+      become: yes
+
+    - name: build spring boot jar
+      shell: |
+        cd /tmp/complete
+        docker-compose up -d
+      become: yes
+      

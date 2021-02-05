@@ -1,0 +1,56 @@
+---
+- name: Configure Grafana Server
+  hosts: localhost
+  tasks:
+
+    - name: Install and update the newest packages available
+      yum:
+        update_cache: yes
+        state: latest
+      become: true
+
+    - name: Add the Grafana repositories to your local YUM repos
+          (Conf File)
+      copy:
+        dest: /etc/yum.repos.d/grafana.repo
+        content: |
+          [grafana]
+          name=grafana
+          baseurl=https://packages.grafana.com/oss/rpm
+          repo_gpgcheck=1
+          enabled=1
+          gpgcheck=1
+          gpgkey=https://packages.grafana.com/gpg.key
+          sslverify=1
+          sslcacert=/etc/pki/tls/certs/ca-bundle.crt
+      become: yes
+
+    - name: update your repositories one more time
+      become: true
+      yum:
+        update_cache: yes
+
+    - name: Install Grafana with YUM
+      yum:
+        update_cache: yes
+        name: grafana  
+        state: latest
+      become: yes
+
+    - name: Disable SELinux
+      selinux:
+        state: disabled
+      become: yes
+
+    - name: Make sure a service is running
+      systemd:
+        state: started
+        name: grafana-server
+      become: yes
+
+    - name: Enable service httpd and ensure it is not masked
+      systemd:
+        name: grafana-server
+        enabled: yes
+        masked: no
+      become: yes

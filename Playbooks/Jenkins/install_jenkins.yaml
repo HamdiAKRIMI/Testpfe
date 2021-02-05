@@ -1,0 +1,70 @@
+---
+- name: Configure Jenkins Server
+  hosts: localhost
+  tasks:
+    - name: Update APT package manager repositories cache
+      become: true
+      apt:
+        update_cache: yes
+
+    - name: Install packages and dependencies 1
+      apt:
+        update_cache: yes
+        name: openjdk-8-jdk  # this specific version is needed for Jenkins to run
+        state: present
+      become: yes
+
+    - name: Install packages and dependencies 2
+      apt:
+        update_cache: yes
+        name: libfontconfig
+        state: present
+      become: yes
+
+    - name: Install packages and dependencies 3
+      apt:
+        update_cache: yes
+        name: libffi-dev
+        state: present
+      become: yes
+
+    - name: Install packages and dependencies 4
+      apt:
+        update_cache: yes
+        name: libncurses5-dev
+        state: present
+      become: yes
+
+    - name: Install Jenkins 1/2
+      shell: | 
+        wget -q -O - https://pkg.jenkins.io/debian/jenkins.io.key | sudo apt-key add -
+      become: yes
+    
+    - name: Install Jenkins 2/2
+      shell: | 
+        sh -c 'echo deb https://pkg.jenkins.io/debian-stable binary/ > /etc/apt/sources.list.d/jenkins.list'
+      become: yes
+
+    - name: Add Key
+      shell: |
+        sh -c 'apt-key adv --keyserver keyserver.ubuntu.com --recv-keys 9B7D32F2D50582E6'
+      become: yes
+
+    - name: Install Jenkins server
+      apt: 
+        update_cache: yes
+        name: jenkins 
+        state: present
+      become: yes
+    
+    - name: Run Jenkins
+      shell: 
+        /etc/init.d/jenkins start
+      become: yes
+
+    - name: Admin Password Jenkins
+      shell: |
+        sh -c 'cat /var/lib/jenkins/secrets/initialAdminPassword'
+      register: shell_output
+      become: yes
+    - debug: var=shell_output

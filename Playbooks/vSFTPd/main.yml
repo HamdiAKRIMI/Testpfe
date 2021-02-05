@@ -1,0 +1,76 @@
+---
+- name: Provision FTP Server
+  hosts: localhost
+  tasks:
+
+      # tasks file for ansible-vsftpd
+      - name: install vsftpd
+        apt: 
+          name=vsftpd 
+          state=latest 
+          cache_valid_time=3600 
+          update_cache=yes
+        become: yes
+      
+      - name: Create a login user
+        user:
+          name: ftp_user
+          password: '$6$9Dj7WA3koJ3$WXDLtIg.f49spJa.gfCGCS1wyAwogLxEiUU14NhNCr4pjfaky33.V/C0ODR5Cc.CY1QI.S6224sCV7YhultzQ0'
+          groups: # Empty by default, here we give it some groups
+          state: present
+          shell: /bin/bash       # Defaults to /bin/bash
+          system: no             # Defaults to no
+          createhome: yes        # Defaults to yes
+          home: /home/ftp_user  # Defaults to /home/<username>
+        become: yes
+
+      - name: Creates directory
+        file:
+          path: /home/ftp_user/FTP_DEP
+          owner: ftp_user
+          group: ftp_user
+          mode: '1777'
+          state: directory
+        become: yes
+      
+      - name: Insert/Update vsftpd.conf configuration  in /etc/vsftpd.conf
+          (Conf File)
+        blockinfile:
+          path: /etc/vsftpd.conf
+          block: |
+              listen=NO
+              listen_ipv6=NO
+              anonymous_enable=NO
+              local_enable=YES
+              write_enable=YES
+              local_umask=022
+              dirmessage_enable=YES
+              use_localtime=YES
+              xferlog_enable=YES
+              connect_from_port_20=YES
+              chroot_local_user=NO
+              secure_chroot_dir=/var/run/vsftpd/empty
+              pam_service_name=vsftpd
+              pasv_enable=Yes
+              pasv_min_port=10000
+              pasv_max_port=11000
+              user_sub_token=$USER
+              local_root=/home/$USER/FTP_DEP
+              userlist_enable=YES
+              userlist_file=/etc/vsftpduserlist.conf
+              userlist_deny=NO
+        become: yes
+      
+      - name: Creating a file with content and Add the FTP User  in /etc/vsftpduserlist.conf
+          (Conf File)
+        copy:
+          dest: /etc/vsftpduserlist.conf
+          content: |
+            ftp_user
+        become: yes
+
+      - name: Restart service vsftpd
+        service:
+          name: vsftpd
+          state: reloaded
+        become: yes

@@ -1,0 +1,20 @@
+---
+- name: Provision GitHub Server
+  hosts: localhost
+  tasks:
+
+      # tasks file for GitHub
+      - name: install GitHub
+        apt: 
+          name=git 
+          state=latest 
+          cache_valid_time=3600 
+          update_cache=yes
+        become: yes
+
+      - name: Setting Up Git username
+        shell: git config --global user.name "Hamdi AKRIMI"
+      - name: Setting Up Git email
+        shell: git config --global user.email "hamdi.akrimi@esprit.tn"
+      - name: Setting Up Git email
+        shell: git init
