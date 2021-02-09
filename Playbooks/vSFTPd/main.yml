@@ -1,6 +1,5 @@
 ---
 - name: Provision FTP Server
-  hosts: localhost
   become: true
   tasks:
 
