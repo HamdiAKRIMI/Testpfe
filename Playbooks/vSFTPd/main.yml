@@ -1,6 +1,7 @@
 ---
 - name: Provision FTP Server
   hosts: localhost
+  become: true
   tasks:
 
       # tasks file for ansible-vsftpd
