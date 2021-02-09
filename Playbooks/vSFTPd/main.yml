@@ -8,7 +8,7 @@
       - name: install vsftpd
         apt: 
           name=vsftpd 
-          state=latest 
+          state=present 
 
       
       - name: Create a login user
