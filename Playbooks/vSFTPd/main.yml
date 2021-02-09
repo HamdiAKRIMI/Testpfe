@@ -6,7 +6,7 @@
 
       # tasks file for ansible-vsftpd
       - name: install vsftpd
-        apt: 
+        yum: 
           name=vsftpd 
           state=present 
 
