@@ -1,6 +1,6 @@
 ---
 - name: Configure Jenkins Server
-  hosts: localhost
+  hosts: all
   tasks:
     - name: Update APT package manager repositories cache
       become: true
