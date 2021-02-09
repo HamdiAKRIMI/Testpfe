@@ -4,11 +4,7 @@
   become: true
   tasks:
 
-      # tasks file for ansible-vsftpd
-      - name: install vsftpd
-        apt: 
-          name=vsftpd 
-          state=present 
+  
 
       
       - name: Create a login user
