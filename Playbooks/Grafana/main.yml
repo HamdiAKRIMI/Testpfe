@@ -37,11 +37,6 @@
         state: latest
       become: yes
 
-    - name: Disable SELinux
-      selinux:
-        state: disabled
-      become: yes
-
     - name: Make sure a service is running
       systemd:
         state: started
