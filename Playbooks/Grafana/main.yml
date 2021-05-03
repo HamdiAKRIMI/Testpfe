@@ -1,6 +1,6 @@
 ---
 - name: Configure Grafana Server
-  hosts: localhost
+  hosts: 54.237.63.65
   tasks:
 
     - name: Install and update the newest packages available
